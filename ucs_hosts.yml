@@ -1,0 +1,13 @@
+---
+- host: "<ip-1>"
+  username: "admin"
+  password: "password"
+  # proxy_host: "proxy-IP"
+  # proxy_port: 80
+  # read_only: false
+- host: "<ip-2>"
+  username: "admin"
+  password: "password"
+  # proxy_host: "proxy-IP"
+  # proxy_port: 80
+  # read_only: false
