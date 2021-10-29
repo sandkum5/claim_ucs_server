@@ -1,14 +1,9 @@
-# get-ucs-claim-codes
+# Claim_Server
+Check Server Connectivity on Port 22.
 Get Cisco UCS Server Device Connector Claim Codes
-
 If the device is already claimed, print the Server IP and the Intersight Account under which its claimed. 
-
-### Sample Output:
+Else, get the claim codes and claim the Server in Intersight. 
 
 ```
-$ ./get_claim_codes.py
-Server x.x.x.x is already claimed under Intersight Account: xxxxx
-Log out: success
-DeviceIdentifier: xxxxxxxxx, Token: xxxxxxxxxx
-Log out: success
+$ python3 claim_server.py
 ```
