@@ -1,14 +1,24 @@
 #!/usr/bin/env python3
 """
 Purpose:
+    Check Server Connectivity on Port 22
     Login to UCS servers
     Get the Device ID and Security Token
+    Claim Server in Intersight
     Logout
 """
+import os
+import socket
 import xml.etree.ElementTree as ET
+import json
 import yaml
 import requests
 from urllib3.exceptions import InsecureRequestWarning
+from dotenv import load_dotenv
+from intersight_auth import IntersightAuth
+
+
+load_dotenv()
 
 
 def ucs_login(base_url, user, password):
@@ -62,6 +72,19 @@ def get_connection_state(base_url, out_cookie):
     return connection_info
 
 
+def server_connection(server: str, port: int = 22, timeout=3):
+    """Check server connectivity"""
+    try:
+        socket.setdefaulttimeout(timeout)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((server, port))
+    except OSError as error:
+        return False
+    else:
+        s.close()
+        return True
+
+
 def get_device_identifier(base_url, out_cookie):
     """
     Get Device Identifier
@@ -93,6 +116,34 @@ def get_security_tokens(base_url, out_cookie):
             return message
 
 
+def intersight_claim_device(security_token, serial_number):
+    """
+    Claim server in Intersight
+    """
+    # Create an AUTH object
+    auth = IntersightAuth(
+        secret_key_filename="./SecretKey.txt", api_key_id=os.getenv("api_key_id")
+    )
+    url = "https://intersight.com/api/v1/asset/DeviceClaims"
+    payload = {"SecurityToken": security_token, "SerialNumber": serial_number}
+    headers = {"Content-Type": "application/json"}
+    print("Sending Info to Intersight")
+    response = requests.request(
+        "POST", url, auth=auth, headers=headers, data=json.dumps(payload)
+    )
+    print("Got Response from Intersight")
+    if (
+        response.status_code == 401
+        and response.json()["code"] == "AuthenticationFailure"
+    ):
+        print(response.json()["message"])
+    elif response.status_code == 200 and response.json()["Results"]:
+        pass
+        # print(response.status_code)
+        # print(response.json())
+    return response.status_code
+
+
 def workflow():
     """
     Execute all the actions for each server in the yaml file.
@@ -109,23 +160,30 @@ def workflow():
             username = server["username"]
             password = server["password"]
             base_url = f"https://{host}/"
-            # Add a condition for connection failure
-            # We need to skip for connection failures.
-            out_cookie = ucs_login(base_url, username, password)
-            connection_info = get_connection_state(base_url, out_cookie)
-            if connection_info["AccountOwnershipState"] == "Claimed":
-                intersight_account = connection_info["AccountOwnershipName"]
-                print(
-                    f"Server {host} claimed under Intersight Account: {intersight_account}"
-                )
+            # Check server connectivity
+            if server_connection(host):
+                # We need to skip for connection failures.
+                out_cookie = ucs_login(base_url, username, password)
+                connection_info = get_connection_state(base_url, out_cookie)
+                if connection_info["AccountOwnershipState"] == "Claimed":
+                    intersight_account = connection_info["AccountOwnershipName"]
+                    print(
+                        f"Server {host} claimed under Intersight Account: {intersight_account}"
+                    )
+                    out_status = ucs_logout(base_url, out_cookie)
+                    print(f"Log out: {out_status}")
+                    continue
+                device_id = get_device_identifier(base_url, out_cookie)
+                device_token = get_security_tokens(base_url, out_cookie)
                 out_status = ucs_logout(base_url, out_cookie)
+                print(f"DeviceIdentifier: {device_id}, Token: {device_token}")
                 print(f"Log out: {out_status}")
+                claim_status = intersight_claim_device(device_token, device_id)
+                if claim_status == "200":
+                    print(f"Claimed Server {host} Successfully in Intersight")
+            else:
+                print(f"{host} is not reachable")
                 continue
-            device_id = get_device_identifier(base_url, out_cookie)
-            device_token = get_security_tokens(base_url, out_cookie)
-            print(f"DeviceIdentifier: {device_id}, Token: {device_token}")
-            out_status = ucs_logout(base_url, out_cookie)
-            print(f"Log out: {out_status}")
 
 
 def main():
