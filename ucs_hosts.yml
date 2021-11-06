@@ -1,13 +1,43 @@
 ---
-- host: "<ip-1>"
+- host: "server_1_ip"
   username: "admin"
   password: "password"
-  # proxy_host: "proxy-IP"
-  # proxy_port: 80
-  # read_only: false
-- host: "<ip-2>"
+  read_only: false
+  config_dns: True
+  config_ntp: True
+  config_proxy: True
+  name_servers:
+    - "x.x.x.1"
+    - "x.x.x.2"
+  domain_name: "demo.lab"
+  ntp_servers:
+    - "x.x.x.3"
+    - "x.x.x.4"
+  proxy_payload:
+    AuthenticationEnabled: False
+    ProxyType: "Manual"
+    ProxyHost: "proxy.demo.lab"
+    ProxyPort: 8080
+    ProxyUsername: ""
+    ProxyPassword: ""
+- host: "server_2_ip"
   username: "admin"
   password: "password"
-  # proxy_host: "proxy-IP"
-  # proxy_port: 80
-  # read_only: false
+  read_only: false
+  config_dns: false
+  config_ntp: false
+  config_proxy: false
+  name_servers:
+    - "x.x.x.1"
+    - "x.x.x.2"
+  domain_name: ""
+  ntp_servers:
+    - "x.x.x.3"
+    - "x.x.x.4"
+  proxy_payload:
+    AuthenticationEnabled: False
+    ProxyType: "Manual"
+    ProxyHost: "proxy.demo.lab"
+    ProxyPort: 8080
+    ProxyUsername: ""
+    ProxyPassword: ""
