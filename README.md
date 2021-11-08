@@ -12,7 +12,7 @@
 - Command to Install Python Modules: pip3 install pyyaml python-dotenv
 - intersight_auth.py Module
 - Intersight API Keys
-  - Intersight api_key_id updated in .env file. 
+  - Update Intersight api_key_id in .env file. 
   - Intersight API SecretKey.txt file. 
 - Update ucs_hosts.yml file with Server IP's, Credentials, DNS, NTP, Proxy Info. 
 
