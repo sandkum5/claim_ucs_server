@@ -6,6 +6,10 @@
 - Else, get the claim codes and claim the Server in Intersight. 
 
 ### Pre-requisites
+- Python Modules
+  - pyyaml 
+  - python-dotenv
+- Command to Install Python Modules: pip3 install pyyaml python-dotenv
 - intersight_auth.py Module
 - Intersight API Keys
   - Intersight api_key_id updated in .env file. 
