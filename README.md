@@ -1,5 +1,5 @@
 # Claim_Server
-- Check Server Connectivity on Port 443.
+- Checks Server Connectivity on Port 443.
 - If Device Connector is enabled, get Cisco UCS Server Device Connector Claim Codes.
 - If Device Connector is disabled, enable Device Connector, update DNS, NTP, Proxy info and get the claim codes. 
 - If the device is already claimed, print the Server IP and the Intersight Account under which its claimed. 
