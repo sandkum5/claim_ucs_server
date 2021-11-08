@@ -14,7 +14,7 @@
 - Intersight API Keys
   - Intersight api_key_id updated in .env file. 
   - Intersight API SecretKey.txt file. 
-- ucs_hosts.yml file updated with Server IP's, Credentials, DNS, NTP, Proxy Info. 
+- Update ucs_hosts.yml file with Server IP's, Credentials, DNS, NTP, Proxy Info. 
 
 ```
 $ python3 claim_server.py
